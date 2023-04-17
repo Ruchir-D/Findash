@@ -6,10 +6,12 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 import cors from "cors";
 import kpiRoutes from "./routes/kpi.js";
+import transactionRoutes from "./routes/transactionRoutes.js"
 import KPI from "./models/KPI.js";
-import { kpis } from "./data/data.js";
-import { productRoutes } from "./routes/product.js"
-import Product from "./models/KPI.js";
+import { kpis, products, transactions } from "./data/data.js";
+import productRoutes from "./routes/product.js"
+import Product from "./models/Product.js";
+import Transaction from "./models/Transaction.js";
 
 // CONFIGURATIONS
 dotenv.config();
@@ -26,7 +28,8 @@ console.log('hello')
 
 // Routes
 app.use("/kpi", kpiRoutes);
-app.use("/product", productRoutes)
+app.use("/product", productRoutes);
+app.use("/transaction", transactionRoutes);
 
 // MONGOOSE SETUP
 const PORT = process.env.PORT || 9000;
@@ -37,7 +40,9 @@ mongoose
         app.listen(PORT, ()=> console.log(`Server Port: ${PORT}`));
         
         // ADDING THE SEED DATA FOR PRODUCTION 
-        await mongoose.connection.db.dropDatabase();
-        KPI.insertMany(kpis);
+        // await mongoose.connection.db.dropDatabase();
+        // KPI.insertMany(kpis);
+        // Product.insertMany(products);
+        // Transaction.insertMany(transactions);
     })
     .catch((error)=> console.log(`${error}) did not connect`));

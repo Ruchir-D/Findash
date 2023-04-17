@@ -58,7 +58,7 @@ const Dashboard = () => {
     <Box width="100%" height="100%" display="grid" gap="1.5rem"
         sx={isAboveMediumScreens ? {
             gridTemplateColumns: "repeat(3, minmax(370px, 1fr))",
-            gridTemplateRows: "55px 55px 55px 55px 55px 55px 55px 55px 55px 55px",
+            gridTemplateRows: "60px 60px 60px 60px 60px 60px 60px 60px 60px 60px",
             gridTemplateAreas: gridTemplateLargeScreens,
             
         } : {
