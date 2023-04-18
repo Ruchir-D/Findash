@@ -27,7 +27,7 @@ const Predictions = () => {
 
     const formatted: Array<DataPoint> = monthData.map(
       ({ revenue }, i: number) => {
-        return [i, revenue];
+        return [i, Number(revenue)];
       }
     );
     const regressionLine = regression.linear(formatted);
