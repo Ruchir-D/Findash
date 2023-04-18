@@ -44,7 +44,7 @@ const Row1 = (props: Props) => {
         return {
           name: month.substring(0, 3),
           revenue: revenue,
-          profit: (revenue - expenses).toFixed(2),
+          profit: (Number(revenue) - Number(expenses)).toFixed(2),
         };
       })
     )
@@ -226,7 +226,7 @@ const Row1 = (props: Props) => {
           <XAxis dataKey="name" 
                  axisLine={false} 
                  tickLine={false} 
-                 style={{ fontsize: "10px"}}/>
+                 style={{ fontSize: "10px"}}/>
           <YAxis />
           <Tooltip />
           <Bar dataKey="revenue" fill="url(#colorRevenue)" />
