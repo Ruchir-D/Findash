@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: findash-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: findash
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - findash-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: server
+    container_name: findash-server
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    environment:
+      - NODE_ENV=development
+      - MONGO_URL=mongodb://mongodb:27017/findash
+      - PORT=9000
+      - ALLOWED_ORIGINS=http://localhost:5173
+    volumes:
+      - ./server:/app/server
+      - /app/server/node_modules
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - findash-network
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: client
+    container_name: findash-client
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_BASE_URL=http://localhost:9000/
+    volumes:
+      - ./client:/app/client
+      - /app/client/node_modules
+    depends_on:
+      - server
+    networks:
+      - findash-network
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  findash-network:
+    driver: bridge

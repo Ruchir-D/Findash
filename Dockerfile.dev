@@ -1,0 +1,27 @@
+# Development Dockerfile with hot reload
+
+FROM node:20-alpine AS base
+
+# Server stage
+FROM base AS server
+WORKDIR /app/server
+
+COPY server/package*.json ./
+RUN npm install
+
+COPY server/ ./
+
+EXPOSE 9000
+CMD ["npm", "run", "dev"]
+
+# Client stage
+FROM base AS client
+WORKDIR /app/client
+
+COPY client/package*.json ./
+RUN npm install
+
+COPY client/ ./
+
+EXPOSE 5173
+CMD ["npm", "run", "dev", "--", "--host"]

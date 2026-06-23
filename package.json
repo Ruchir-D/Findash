@@ -1,0 +1,40 @@
+{
+  "name": "findash",
+  "version": "1.0.0",
+  "description": "Financial Dashboard Application - Full Stack MERN",
+  "private": true,
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=server\" \"npm run dev --workspace=client\"",
+    "dev:server": "npm run dev --workspace=server",
+    "dev:client": "npm run dev --workspace=client",
+    "build": "npm run build --workspace=client",
+    "lint": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces",
+    "format": "prettier --write \"**/*.{js,ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,ts,tsx,json,md}\"",
+    "install:all": "npm install && npm install --workspaces"
+  },
+  "keywords": [
+    "financial",
+    "dashboard",
+    "mern",
+    "react",
+    "express",
+    "mongodb",
+    "typescript"
+  ],
+  "author": "Ruchir Dandge",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "prettier": "^3.2.5"
+  }
+}

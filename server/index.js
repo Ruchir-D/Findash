@@ -12,24 +12,45 @@ import { kpis, products, transactions } from "./data/data.js";
 import productRoutes from "./routes/product.js"
 import Product from "./models/Product.js";
 import Transaction from "./models/Transaction.js";
+import { errorHandler, notFound } from "./middleware/errorHandler.js";
+import { apiLimiter, sanitizeInput } from "./middleware/security.js";
 
 // CONFIGURATIONS
 dotenv.config();
 const app = express();
-app.use(express.json());
+
+// Security middleware
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin'}));
-app.use(morgan("common"));
+app.use(cors({
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
+    credentials: true,
+}));
+app.use(apiLimiter);
+app.use(sanitizeInput);
+
+// Body parsing middleware
+app.use(express.json({ limit: '10mb' }));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false}));
-app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false, limit: '10mb' }));
 
-console.log('hello')
+// Logging middleware
+app.use(morgan("combined"));
 
-// Routes
+
+// Health check endpoint
+app.get("/health", (_req, res) => {
+    res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+// API Routes
 app.use("/kpi", kpiRoutes);
 app.use("/product", productRoutes);
 app.use("/transaction", transactionRoutes);
+
+// Error handling
+app.use(notFound);
+app.use(errorHandler);
 
 // MONGOOSE SETUP
 const PORT = process.env.PORT || 9000;
@@ -37,12 +58,16 @@ const PORT = process.env.PORT || 9000;
 mongoose
     .connect(process.env.MONGO_URL)
     .then(async ()=> {
-        app.listen(PORT, ()=> console.log(`Server Port: ${PORT}`));
-        
-        // ADDING THE SEED DATA FOR PRODUCTION 
+        app.listen(PORT, ()=> console.info(`✓ Server running on port ${PORT}`));
+        console.info('✓ Database connected successfully');
+
+        // ADDING THE SEED DATA FOR PRODUCTION
         // await mongoose.connection.db.dropDatabase();
         // KPI.insertMany(kpis);
         // Product.insertMany(products);
         // Transaction.insertMany(transactions);
     })
-    .catch((error)=> console.log(`${error}) did not connect`));
+    .catch((error)=> {
+        console.error('✗ Database connection failed:', error.message);
+        process.exit(1);
+    });
