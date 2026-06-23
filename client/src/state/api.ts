@@ -27,14 +27,17 @@ export const api = createApi({
      * Fetch all KPI data including monthly and daily breakdowns
      */
     getKpis: build.query<Array<GetKpisResponse>, void>({
-      queryFn: async (arg, queryApi, extraOptions, baseQuery) => {
+      queryFn: async (_arg, _queryApi, _extraOptions, baseQuery) => {
         if (isDemoMode()) {
           // Return dummy data in demo mode
           return { data: dummyKpis };
         }
         // Fetch real data from API
         const result = await baseQuery("kpi/kpis/");
-        return result.data ? { data: result.data as Array<GetKpisResponse> } : { error: result.error };
+        if (result.error) {
+          return { error: result.error };
+        }
+        return { data: result.data as Array<GetKpisResponse> };
       },
       providesTags: ["Kpis"],
     }),
@@ -42,14 +45,17 @@ export const api = createApi({
      * Fetch all product data with pricing and transaction references
      */
     getProducts: build.query<Array<GetProductsResponse>, void>({
-      queryFn: async (arg, queryApi, extraOptions, baseQuery) => {
+      queryFn: async (_arg, _queryApi, _extraOptions, baseQuery) => {
         if (isDemoMode()) {
           // Return dummy data in demo mode
           return { data: dummyProducts };
         }
         // Fetch real data from API
         const result = await baseQuery("product/products/");
-        return result.data ? { data: result.data as Array<GetProductsResponse> } : { error: result.error };
+        if (result.error) {
+          return { error: result.error };
+        }
+        return { data: result.data as Array<GetProductsResponse> };
       },
       providesTags: ["Products"],
     }),
@@ -57,22 +63,22 @@ export const api = createApi({
      * Fetch transaction history with pagination support
      */
     getTransactions: build.query<Array<GetTransactionsResponse>, void>({
-      queryFn: async (arg, queryApi, extraOptions, baseQuery) => {
+      queryFn: async (_arg, _queryApi, _extraOptions, baseQuery) => {
         if (isDemoMode()) {
           // Return dummy data in demo mode
           return { data: dummyTransactions };
         }
         // Fetch real data from API
         const result = await baseQuery("transaction/transactions/");
-        if (result.data) {
-          const response = result.data as GetTransactionsPaginatedResponse | Array<GetTransactionsResponse>;
-          // Handle both paginated and non-paginated responses
-          if (Array.isArray(response)) {
-            return { data: response };
-          }
-          return { data: response.data || [] };
+        if (result.error) {
+          return { error: result.error };
         }
-        return { error: result.error };
+        const response = result.data as GetTransactionsPaginatedResponse | Array<GetTransactionsResponse>;
+        // Handle both paginated and non-paginated responses
+        if (Array.isArray(response)) {
+          return { data: response };
+        }
+        return { data: response.data || [] };
       },
       providesTags: ["Transactions"],
     }),
