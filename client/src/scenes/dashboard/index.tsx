@@ -5,14 +5,8 @@ import Row3 from "./Row3";
 
 const gridTemplateLargeScreens = `
   "a b c"
-  "a b c"
-  "a b c"
-  "a b f"
   "d e f"
-  "d e f"
-  "d h i"
   "g h i"
-  "g h j"
   "g h j"
 `;
 const gridTemplateSmallScreens = `
@@ -53,19 +47,19 @@ const Dashboard = () => {
   return (
     <Box
       width="100%"
-      height="100%"
       display="grid"
       gap="1.5rem"
+      pb="2rem"
       sx={
         isAboveMediumScreens
           ? {
               gridTemplateColumns: "repeat(3, minmax(370px, 1fr))",
-              gridTemplateRows: "repeat(10, minmax(60px, 1fr))",
+              gridTemplateRows: "380px 260px 340px 340px",
               gridTemplateAreas: gridTemplateLargeScreens,
             }
           : {
               gridAutoColumns: "1fr",
-              gridAutoRows: "80px",
+              gridAutoRows: "minmax(300px, auto)",
               gridTemplateAreas: gridTemplateSmallScreens,
             }
       }
